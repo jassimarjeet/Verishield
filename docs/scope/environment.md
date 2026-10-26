@@ -63,3 +63,29 @@ pip also installed the dependencies of those packages, including the CUDA 13 lib
 ## Colab check
 
 `colab/check_env.ipynb` has one code cell. It prints the Python version, `torch.__version__`, `torch.cuda.is_available()`, and `torchvision.__version__`. The notebook contains no dataset path.
+
+## Compute roles
+
+Jas confirmed on 2026-10-26 (Asia/Calcutta, IST): training runs on Google Colab. This checkout stays the test and app machine. Recorded in this file on 2026-10-26 17:47:13 IST.
+
+The Python 3.12.3 and torch 2.14.1+cu130 record above stays as written. `.venv` from that step was still present and was reused. Packages were not reinstalled, so those recorded versions are unchanged.
+
+## Media tools
+
+Checked on this machine on 2026-10-26 17:47:13 IST. Both commands succeeded.
+
+`ffmpeg -version` version line:
+
+```text
+ffmpeg version 6.1.1-3ubuntu5 Copyright (c) 2000-2023 the FFmpeg developers
+```
+
+`ffprobe -version` version line:
+
+```text
+ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers
+```
+
+`tests/test_decode_synthetic.py` generates a short synthetic color clip with FFmpeg at runtime and checks that OpenCV reads the same clip at the known frame count and frame size. The clip is not a FaceForensics file and is not committed.
+
+The same `ffmpeg -version` and `ffprobe -version` check inside the future container is still open. That check belongs to Step 3.8. This step does not build the API image.
