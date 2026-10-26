@@ -101,3 +101,13 @@ Working paths for this project, recorded on 2026-10-26 17:52:20 IST (Asia/Calcut
 Training runs on Google Colab. A Colab ephemeral disk is not the backup.
 
 Backup rule: at least one copy of the best checkpoint of each final run goes on a second disk Jas controls. The physical disk is still unnamed. No disk path is recorded.
+
+## Tracker deviation
+
+Recorded on 2026-10-26 18:39:17 IST (Asia/Calcutta).
+
+The paper's tracker is the Face2Face tracker of Thies et al. That tracker is not installed on this machine, and the public FaceForensics repository does not ship it as a pip package. opencv-python 5.0.0 also has no Haar cascade. The Colab Regime S notebook uses OpenCV FaceDetectorYN with the YuNet 2023mar ONNX from `opencv/opencv_zoo` (`face_detection_yunet_2023mar.onnx`, score threshold 0.9). The crop is still enlarged by 1.3 about the detected box center. A frame with no detection is skipped and is not replaced by the full frame. The ONNX file is downloaded at runtime and is not committed.
+
+## Regime S notebook
+
+`colab/train_xception.ipynb` is the notebook Jas pastes into the empty Colab file. torchvision 0.29.1 has no Xception class, so the notebook installs timm and loads `legacy_xception`. On this machine `pip` installed timm 1.0.30 for a one-batch smoke test with `pretrained=False`. That smoke test does not download FaceForensics++ weights or videos, and it does not add a row to `artifacts/INDEX.md`. ImageNet initialization happens when the Colab notebook runs with `pretrained=True`.

@@ -1,0 +1,42 @@
+run_id: example-xception-face-c23-regime-s
+git_commit: null
+seed: 0
+dataset_name: faceforensics++
+dataset_version: null
+split_id: official-720-140-140
+train_video_list: configs/examples/regime-s-c23-train.txt
+quality: c23
+frame_sample: "first 16 successfully cropped frames per video, in decode order. This is a free-Colab session cap, not the paper's 100-image rule."
+architecture: xception-face
+class_weight: null
+optimizer:
+  name: Adam
+  learning_rate: 0.0002
+  batch_size: 8
+  beta1: 0.9
+  beta2: 0.999
+  adam_epsilon: 1.0e-8
+max_epochs:
+  frozen_new_layer: 1
+  further: 1
+early_stopping:
+  applied: false
+held_out_methods: []
+perturbation:
+  method: none
+notes: >-
+  Example config for the Colab Regime S session, not a finished run.
+  seed 0 is an example seed, not the frozen experiment seed and not a seed published by the paper.
+  The 10 video ids were drawn once with Python 3.12 random.Random(0).sample on the 360 pairs in the authors' train.json, k=5.
+  Those pairs are frozen in configs/examples/regime-s-c23-pairs.json.
+  train_video_list has the first 4 pairs (8 videos) and is what the optimizer fits.
+  configs/examples/regime-s-c23-monitor.txt has the last pair (179 and 212), held out of the optimizer.
+  The printed validation accuracy is only on that pair. It is not the official 140-video validation set and not Table 1.
+  Official val.json and test.json ids are not downloaded.
+  Quality is c23 only. Directory names follow the authors' script: original_sequences/youtube/c23/videos and manipulated_sequences/<method>/c23/videos.
+  The paper's Xception schedule is 3 frozen epochs then up to 15 more, batch size 32.
+  This session uses 1 frozen epoch, then 1 fine-tune epoch, and batch size 8, so one free Colab session can finish.
+  adam_epsilon is the paper's Adam optimizer constant, not an attack budget.
+  perturbation method is none. This file records no accuracy.
+  class_weight is computed from the crop counts of this subsample at runtime and is not hard-coded.
+  The face tracker is opencv-yunet-2023mar (OpenCV FaceDetectorYN), not the paper's Face2Face tracker. The crop factor stays 1.3.

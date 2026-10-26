@@ -12,4 +12,5 @@ dependencies = [
     "fastapi",
     "uvicorn",
     "httpx",
+    "timm",
 ]
