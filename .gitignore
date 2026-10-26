@@ -1,5 +1,6 @@
 /data/
-/artifacts/
+/artifacts/*
+!/artifacts/INDEX.md
 .venv/
 venv/
 .env

@@ -89,3 +89,15 @@ ffprobe version 6.1.1-3ubuntu5 Copyright (c) 2007-2023 the FFmpeg developers
 `tests/test_decode_synthetic.py` generates a short synthetic color clip with FFmpeg at runtime and checks that OpenCV reads the same clip at the known frame count and frame size. The clip is not a FaceForensics file and is not committed.
 
 The same `ffmpeg -version` and `ffprobe -version` check inside the future container is still open. That check belongs to Step 3.8. This step does not build the API image.
+
+## Storage
+
+Working paths for this project, recorded on 2026-10-26 17:52:20 IST (Asia/Calcutta):
+
+- Dataset root: `data/ffpp/`. Gitignored. The directory exists on disk. Nothing under it is committed.
+- Checkpoint root: `artifacts/checkpoints/`. Gitignored. The directory exists on disk. Nothing under it is committed.
+- `artifacts/INDEX.md` is tracked. It has a header and no checkpoint rows yet. The SHA-256 of each weight file is filled after each run. The weight file stays out of git.
+
+Training runs on Google Colab. A Colab ephemeral disk is not the backup.
+
+Backup rule: at least one copy of the best checkpoint of each final run goes on a second disk Jas controls. The physical disk is still unnamed. No disk path is recorded.
