@@ -1,0 +1,14 @@
+{
+  "run_id": "example-xception-face-c23-regime-s",
+  "calibration": "no extra calibration",
+  "score": "mean fake-class softmax",
+  "validation": "held-out official training pair 179/212",
+  "selection": "validation-medians",
+  "tau1": 0.853444,
+  "tau2": 0.86573,
+  "false_accept_count": 3,
+  "false_reject_count": 0,
+  "false_reject_rate": 0.0,
+  "weight_sha256": "edfa91c5c9f8a28100f428e3a33c0aec116c5e88d662919f938d24996997eafb",
+  "checkpoint": "/content/drive/MyDrive/verishield/checkpoints/regime-s-c23/best.pt"
+}

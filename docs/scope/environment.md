@@ -96,7 +96,7 @@ Working paths for this project, recorded on 2026-10-26 17:52:20 IST (Asia/Calcut
 
 - Dataset root: `data/ffpp/`. Gitignored. The directory exists on disk. Nothing under it is committed.
 - Checkpoint root: `artifacts/checkpoints/`. Gitignored. The directory exists on disk. Nothing under it is committed.
-- `artifacts/INDEX.md` is tracked. It has a header and no checkpoint rows yet. The SHA-256 of each weight file is filled after each run. The weight file stays out of git.
+- `artifacts/INDEX.md` is tracked. It has one row for `best.pt` from the Colab Regime S run. The training git commit was not printed, so that cell says unrecorded. The weight file stays out of git.
 
 Training runs on Google Colab. A Colab ephemeral disk is not the backup.
 
