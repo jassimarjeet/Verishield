@@ -122,7 +122,7 @@ def parse_v4_args(module, argv: list[str]):
     return args
 
 
-def download_c23_subset(script_path: Path, output_dir: Path, server: str = "EU") -> None:
+def download_c23_subset(script_path: Path, output_dir: Path, server: str = "EU2") -> None:
     regime = load_frozen_regime()
     pairs = regime["train_pairs"] + regime["monitor_pairs"]
     assert_train_ids_only(pair_ids(pairs))

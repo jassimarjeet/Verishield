@@ -112,7 +112,7 @@ The paper's tracker is the Face2Face tracker of Thies et al. That tracker is not
 
 Recorded on 2026-10-26 18:54:57 IST (Asia/Calcutta).
 
-The training download is FaceForensics++ script v4: `https://kaldir.vc.in.tum.de/faceforensics_download_v4.py`. The notebook fetches that file into `/content/` and calls it. Its flags for this run are the output directory, `-d` one of `original`, `Deepfakes`, `Face2Face`, `FaceSwap`, or `NeuralTextures`, `-c c23`, `-t videos`, and `--server EU`. v4's `main` prints its terms URL and waits for Enter. That prompt is left in place.
+The training download is FaceForensics++ script v4: `https://kaldir.vc.in.tum.de/faceforensics_download_v4.py`. The notebook fetches that file into `/content/` and calls it. Its flags for this run are the output directory, `-d` one of `original`, `Deepfakes`, `Face2Face`, `FaceSwap`, or `NeuralTextures`, `-c c23`, `-t videos`, and `--server EU2`. v4's `main` prints its terms URL and waits for Enter. That prompt is left in place.
 
 The original FaceForensics script is v1: `https://kaldir.vc.in.tum.de/faceforensics_download_v1.py`. The training download does not call v1.
 
