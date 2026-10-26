@@ -1,0 +1,41 @@
+run_id: example-xception-face-c23
+git_commit: null
+seed: 0
+dataset_name: faceforensics++
+dataset_version: null
+split_id: official-720-140-140
+train_video_list: null
+quality: c23
+frame_sample: "not chosen; the paper states 100 images per video for validation and test and does not specify which 100"
+architecture: xception-face
+class_weight: null
+optimizer:
+  name: Adam
+  learning_rate: 0.0002
+  batch_size: 32
+  beta1: 0.9
+  beta2: 0.999
+  adam_epsilon: 1.0e-8
+max_epochs:
+  frozen_new_layer: 3
+  further: 15
+early_stopping:
+  validation_checks_per_epoch: 10
+  unchanged_checks_before_stop: 10
+held_out_methods: []
+perturbation:
+  method: none
+notes: >-
+  Example config only, not a finished run.
+  seed 0 is an example seed, not the frozen experiment seed.
+  This file records no accuracy.
+  perturbation method is none, and this file states no attack budget.
+  adam_epsilon is the paper's Adam optimizer constant, not an attack budget.
+  dataset_version is the release identifier recorded at download.
+  class_weight is computed from the downloaded training-split counts and is not set here.
+  git_commit and train_video_list are filled when the run is launched.
+  optimizer, max_epochs, and early_stopping are the paper's Xception settings:
+  Adam with learning rate 0.0002, batch size 32, beta1 0.9, beta2 0.999;
+  3 epochs on the new layer, then up to 15 more;
+  validation checked ten times per epoch, stopping after ten unchanged checks.
+  held_out_methods is empty because this example is joint training.
