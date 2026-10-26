@@ -150,6 +150,22 @@ def _classify(score: float, tau1: float, tau2: float) -> str:
     return "reject"
 
 
+def classify_score(score: float, tau1: float, tau2: float) -> str:
+    """Place one mean fake-class softmax on the frozen demo cuts.
+
+    Accept is strictly below tau1. Manual review runs from tau1 up to, but
+    not including, tau2. Reject starts at tau2. This does not load weights
+    and does not invent a score.
+    """
+    if isinstance(score, bool) or not isinstance(score, (int, float)):
+        raise RuntimeError("A score must be numeric. Not inventing a decision.")
+    if not 0.0 <= float(score) <= 1.0:
+        raise RuntimeError("A fake-class softmax must sit in [0, 1]. Not inventing a decision.")
+    if not tau1 < tau2:
+        raise RuntimeError("tau1 must be below tau2.")
+    return _classify(float(score), float(tau1), float(tau2))
+
+
 def _tradeoff(clips: list[dict], tau1: float, tau2: float) -> dict:
     decisions = [_classify(clip["score"], tau1, tau2) for clip in clips]
     false_accept = 0

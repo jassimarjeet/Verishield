@@ -1,2 +1,2 @@
-# Skeleton only. The API service is Step 3.8.
-# This file does not start a service, and /health is not implemented.
+# The API and web app are started by hand. See the README.
+# This file does not start a service.

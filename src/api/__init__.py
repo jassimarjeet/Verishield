@@ -1,1 +1,5 @@
-"""HTTP API. Filled by Step 8.1 (mid-review minimum) and Step 12.1."""
+"""Local demo API for the face-crop Xception study."""
+
+from src.api.app import app
+
+__all__ = ["app"]
