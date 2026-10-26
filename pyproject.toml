@@ -1,0 +1,15 @@
+[project]
+name = "verishield"
+version = "0.0.0"
+description = "One-student face-crop XceptionNet study on FaceForensics++ with leave-one-method-out, FGSM/PGD, one robustness improvement, and a small local demo."
+dependencies = [
+    "torch",
+    "torchvision",
+    "opencv-python",
+    "numpy",
+    "PyYAML",
+    "pytest",
+    "fastapi",
+    "uvicorn",
+    "httpx",
+]

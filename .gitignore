@@ -1,0 +1,10 @@
+/data/
+/artifacts/
+.venv/
+venv/
+.env
+__pycache__/
+*.pyc
+*.mp4
+*.avi
+*.png

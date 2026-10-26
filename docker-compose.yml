@@ -1,0 +1,2 @@
+# Skeleton only. The API service is Step 3.8.
+# This file does not start a service, and /health is not implemented.
