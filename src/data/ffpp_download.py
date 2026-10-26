@@ -1,22 +1,23 @@
-"""Download a c23 training subsample through the authors' script.
+"""Download the Regime S c23 videos through FaceForensics++ script v4.
 
-The script is not in the public GitHub repository. The authors email it after
-the access form. This module refuses to run until that form has been accepted,
-and it refuses YouTube source zips, raw video, c40, and DeepFakeDetection.
+Training uses https://kaldir.vc.in.tum.de/faceforensics_download_v4.py.
+The original FaceForensics script is v1 and is not called here.
+
+v4's ``main`` prints its terms URL and waits on ``input``. This module calls
+``main`` so that check still runs. It does not add a second form, and it does
+not answer the prompt. After the prompt, only the frozen Regime S c23 names
+are passed to v4's ``download_files``.
 """
 
 import importlib.util
-import inspect
 import sys
 from pathlib import Path
 
-from src.data.ffpp_splits import load_frozen_regime, pair_ids
+from src.data.ffpp_splits import assert_train_ids_only, load_frozen_regime, pair_ids
 
-TERMS_FORM_URL = (
-    "https://docs.google.com/forms/d/e/"
-    "1FAIpQLSdRRR3L5zAv6tQ_CKxmK4W96tAab_pfBu2EKAgQbeDVhmXagg/viewform"
-)
-OFFICIAL_REPO = "https://github.com/ondyari/FaceForensics"
+V4_URL = "https://kaldir.vc.in.tum.de/faceforensics_download_v4.py"
+V1_URL = "https://kaldir.vc.in.tum.de/faceforensics_download_v1.py"
+V4_SERVERS = ("EU", "EU2", "CA")
 
 ALLOWED_DATASETS = (
     "original",
@@ -30,36 +31,24 @@ BLOCKED_DATASETS = (
     "original_youtube_videos_info",
     "DeepFakeDetection",
     "DeepFakeDetection_original",
+    "FaceShifter",
+    "all",
 )
 
 
-def load_author_script(script_path: Path):
-    script_path = Path(script_path)
-    if not script_path.is_file():
+def v4_argv(script_path: Path, output_dir: Path, dataset: str, server: str) -> list[str]:
+    if dataset in BLOCKED_DATASETS or dataset not in ALLOWED_DATASETS:
         raise SystemExit(
-            "The authors' download script is not at "
-            f"{script_path}. Upload the file they emailed after the access form. "
-            "This run does not scrape YouTube and does not substitute another downloader."
+            f"Refusing v4 dataset {dataset}. This run does not scrape YouTube, "
+            "does not download raw or c40, and does not download DeepFakeDetection or FaceShifter."
         )
-    spec = importlib.util.spec_from_file_location("ffpp_authors_download", script_path)
-    if spec is None or spec.loader is None:
-        raise SystemExit(f"Could not load the authors' script at {script_path}")
-    module = importlib.util.module_from_spec(spec)
-    spec.loader.exec_module(module)
-    return module
-
-
-def author_download_args(module, script_path: Path, output_dir: Path, server: str):
-    if not hasattr(module, "parse_args"):
-        raise SystemExit(
-            "The uploaded file has no parse_args. It does not look like the authors' "
-            "download-FaceForensics.py. No other downloader will be used."
-        )
-    argv = [
+    if server not in V4_SERVERS:
+        raise SystemExit(f"v4 --server must be one of {V4_SERVERS}.")
+    return [
         str(script_path),
         str(output_dir),
         "-d",
-        "original",
+        dataset,
         "-c",
         "c23",
         "-t",
@@ -67,18 +56,6 @@ def author_download_args(module, script_path: Path, output_dir: Path, server: st
         "--server",
         server,
     ]
-    previous = sys.argv
-    sys.argv = argv
-    try:
-        args = module.parse_args()
-    finally:
-        sys.argv = previous
-    if not getattr(args, "base_url", None) or not getattr(args, "tos_url", None):
-        raise SystemExit(
-            "The authors' script did not provide base_url and tos_url. "
-            f"Open the access form again: {TERMS_FORM_URL}"
-        )
-    return args
 
 
 def manipulation_stems(pair: list[str]) -> list[str]:
@@ -87,9 +64,7 @@ def manipulation_stems(pair: list[str]) -> list[str]:
 
 
 def stems_for_dataset(dataset: str, pairs: list[list[str]]) -> list[str]:
-    if dataset in BLOCKED_DATASETS:
-        raise SystemExit(f"Refusing dataset {dataset}. YouTube source zips and DeepFakeDetection are not part of this run.")
-    if dataset not in ALLOWED_DATASETS:
+    if dataset in BLOCKED_DATASETS or dataset not in ALLOWED_DATASETS:
         raise SystemExit(f"Refusing dataset {dataset}.")
     if dataset == "original":
         stems = []
@@ -102,44 +77,75 @@ def stems_for_dataset(dataset: str, pairs: list[list[str]]) -> list[str]:
     return stems
 
 
-def download_c23_subset(script_path: Path, output_dir: Path, server: str, terms_accepted: bool, tos_confirmed: bool) -> None:
-    if not terms_accepted:
+def regime_filenames(pairs: list[list[str]]) -> set[str]:
+    names = set()
+    for dataset in ALLOWED_DATASETS:
+        names.update(f"{stem}.mp4" for stem in stems_for_dataset(dataset, pairs))
+    return names
+
+
+def select_regime_filenames(filenames, allowed_mp4: set[str]) -> list[str]:
+    return [name for name in filenames if Path(str(name)).name in allowed_mp4]
+
+
+def load_author_script(script_path: Path):
+    script_path = Path(script_path)
+    if not script_path.is_file():
         raise SystemExit(
-            "Stopped. Submit the FaceForensics++ access form before any download:\n"
-            f"{TERMS_FORM_URL}"
+            f"v4 is not at {script_path}. Fetch {V4_URL} before calling it. "
+            f"{V1_URL} is the original FaceForensics script and is not the training download."
         )
+    spec = importlib.util.spec_from_file_location("faceforensics_download_v4", script_path)
+    if spec is None or spec.loader is None:
+        raise SystemExit(f"Could not load {script_path}")
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+def parse_v4_args(module, argv: list[str]):
+    if not hasattr(module, "parse_args") or not hasattr(module, "main"):
+        raise SystemExit(
+            "The fetched file has no v4 parse_args/main. "
+            f"Training does not fall back to {V1_URL}."
+        )
+    previous = sys.argv
+    sys.argv = argv
+    try:
+        args = module.parse_args()
+    finally:
+        sys.argv = previous
+    if getattr(args, "compression", None) != "c23" or getattr(args, "type", None) != "videos":
+        raise SystemExit("Refusing a v4 invocation that is not -c c23 -t videos.")
+    if getattr(args, "dataset", None) not in ALLOWED_DATASETS:
+        raise SystemExit(f"Refusing v4 dataset {getattr(args, 'dataset', None)}.")
+    return args
+
+
+def download_c23_subset(script_path: Path, output_dir: Path, server: str = "EU") -> None:
     regime = load_frozen_regime()
     pairs = regime["train_pairs"] + regime["monitor_pairs"]
-    ids = pair_ids(pairs)
-    from src.data.ffpp_splits import assert_train_ids_only
-
-    assert_train_ids_only(ids)
+    assert_train_ids_only(pair_ids(pairs))
+    allowed = regime_filenames(pairs)
     module = load_author_script(script_path)
-    datasets = getattr(module, "DATASETS", None)
-    if not isinstance(datasets, dict) or not hasattr(module, "download_files"):
-        raise SystemExit(
-            "The uploaded file is missing DATASETS or download_files. "
-            "No YouTube scraper will be used instead."
-        )
-    args = author_download_args(module, Path(script_path), Path(output_dir), server)
-    print("Authors' terms URL from their script:")
-    print(args.tos_url)
-    if not tos_confirmed:
-        raise SystemExit(
-            "Stopped until tos_confirmed is True after you have read the terms URL above."
-        )
-    output_dir = Path(output_dir)
-    for dataset in ALLOWED_DATASETS:
-        if dataset not in datasets:
-            raise SystemExit(f"The authors' script has no dataset entry for {dataset}.")
-        dataset_path = datasets[dataset]
-        stems = stems_for_dataset(dataset, pairs)
-        filenames = [f"{stem}.mp4" for stem in stems]
-        base_url = args.base_url + f"{dataset_path}/c23/videos/"
-        destination = output_dir / dataset_path / "c23" / "videos"
-        print(f"Downloading {len(filenames)} c23 files for {dataset} into {destination}")
-        signature = inspect.signature(module.download_files)
-        extra = {}
-        if "report_progress" in signature.parameters:
-            extra["report_progress"] = True
-        module.download_files(filenames, base_url, str(destination), **extra)
+    if not hasattr(module, "download_files"):
+        raise SystemExit("v4 is missing download_files. No other downloader will be used.")
+    original_download = module.download_files
+
+    def filtered(filenames, base_url, output_path, report_progress=True):
+        names = list(filenames)
+        kept = select_regime_filenames(names, allowed)
+        print(f"v4 listed {len(names)} files; downloading {len(kept)} frozen Regime S c23 files")
+        if not kept:
+            return None
+        return original_download(kept, base_url, output_path, report_progress=report_progress)
+
+    module.download_files = filtered
+    try:
+        for dataset in ALLOWED_DATASETS:
+            argv = v4_argv(script_path, output_dir, dataset, server)
+            args = parse_v4_args(module, argv)
+            # v4 main prints its terms URL and blocks on input(). Leave that prompt intact.
+            module.main(args)
+    finally:
+        module.download_files = original_download

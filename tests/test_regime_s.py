@@ -14,7 +14,13 @@ import torch
 ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT))
 
-from src.data.ffpp_download import stems_for_dataset
+from src.data.ffpp_download import (
+    V1_URL,
+    V4_URL,
+    select_regime_filenames,
+    stems_for_dataset,
+    v4_argv,
+)
 from src.data.ffpp_splits import (
     REGIME_PAIR_COUNT,
     REGIME_SEED,
@@ -51,8 +57,22 @@ def test_regime_s_ids_stay_inside_official_train():
 def test_download_refuses_youtube_and_keeps_pair_names():
     with pytest.raises(SystemExit):
         stems_for_dataset("original_youtube_videos", [["011", "805"]])
+    with pytest.raises(SystemExit):
+        v4_argv(Path("faceforensics_download_v4.py"), Path("/content/ffpp"), "all", "EU")
+    argv = v4_argv(Path("faceforensics_download_v4.py"), Path("/content/ffpp"), "Deepfakes", "EU")
+    assert argv[argv.index("-c") + 1] == "c23"
+    assert argv[argv.index("-t") + 1] == "videos"
+    assert argv[argv.index("-d") + 1] == "Deepfakes"
+    assert "--server" in argv
+    assert "raw" not in argv
+    assert "c40" not in argv
+    assert "original_youtube_videos" not in argv
+    assert V4_URL.endswith("faceforensics_download_v4.py")
+    assert V1_URL.endswith("faceforensics_download_v1.py")
     assert stems_for_dataset("original", [["011", "805"]]) == ["011", "805"]
     assert stems_for_dataset("Deepfakes", [["011", "805"]]) == ["011_805", "805_011"]
+    kept = select_regime_filenames(["000.mp4", "011.mp4", "011_805.mp4"], {"011.mp4", "011_805.mp4"})
+    assert kept == ["011.mp4", "011_805.mp4"]
 
 
 def test_crop_factor_is_1_3_and_clips_at_the_border():

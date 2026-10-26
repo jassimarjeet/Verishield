@@ -108,6 +108,14 @@ Recorded on 2026-10-26 18:39:17 IST (Asia/Calcutta).
 
 The paper's tracker is the Face2Face tracker of Thies et al. That tracker is not installed on this machine, and the public FaceForensics repository does not ship it as a pip package. opencv-python 5.0.0 also has no Haar cascade. The Colab Regime S notebook uses OpenCV FaceDetectorYN with the YuNet 2023mar ONNX from `opencv/opencv_zoo` (`face_detection_yunet_2023mar.onnx`, score threshold 0.9). The crop is still enlarged by 1.3 about the detected box center. A frame with no detection is skipped and is not replaced by the full frame. The ONNX file is downloaded at runtime and is not committed.
 
+## Download scripts
+
+Recorded on 2026-10-26 18:54:57 IST (Asia/Calcutta).
+
+The training download is FaceForensics++ script v4: `https://kaldir.vc.in.tum.de/faceforensics_download_v4.py`. The notebook fetches that file into `/content/` and calls it. Its flags for this run are the output directory, `-d` one of `original`, `Deepfakes`, `Face2Face`, `FaceSwap`, or `NeuralTextures`, `-c c23`, `-t videos`, and `--server EU`. v4's `main` prints its terms URL and waits for Enter. That prompt is left in place.
+
+The original FaceForensics script is v1: `https://kaldir.vc.in.tum.de/faceforensics_download_v1.py`. The training download does not call v1.
+
 ## Regime S notebook
 
 `colab/train_xception.ipynb` is the notebook Jas pastes into the empty Colab file. torchvision 0.29.1 has no Xception class, so the notebook installs timm and loads `legacy_xception`. On this machine `pip` installed timm 1.0.30 for a one-batch smoke test with `pretrained=False`. That smoke test does not download FaceForensics++ weights or videos, and it does not add a row to `artifacts/INDEX.md`. ImageNet initialization happens when the Colab notebook runs with `pretrained=True`.
